@@ -1,0 +1,130 @@
+# Copyright 2024 Google LLC
+# Copyright 2025 sekigon-gonnoc
+# Copyright 2025 nuovotaka
+# SPDX-License-Identifier: Apache-2.0
+
+description: PAW32xx ultra low power wireless mouse chip
+
+compatible: "pixart,paw3222"
+
+include: spi-device.yaml
+
+properties:
+  irq-gpios:
+    type: phandle-array
+    required: true
+    description: GPIO connected to the motion pin, active low.
+
+  power-gpios:
+    type: phandle-array
+    required: false
+    description: GPIO connected to the power control pin.
+
+  snipe-layers:
+    type: array
+    required: false
+    description: |
+      List of layer numbers to switch between using the snipe-layers feature.
+
+  scroll-layers:
+    type: array
+    required: false
+    description: |
+      List of layer numbers to switch between using the scroll-layers feature.
+
+  scroll-horizontal-layers:
+    type: array
+    required: false
+    description: |
+      List of layer numbers to switch between using the horizontal scroll feature.
+
+  res-cpi:
+    type: int
+    description: |
+      CPI resolution for the sensor. This can also be changed in runtime using
+      the paw32xx_set_resolution() API.
+
+  snipe-cpi:
+    type: int
+    required: false
+    description: |
+      CPI resolution for snipe (high-precision) mode. If not specified, 
+      defaults to the value of CONFIG_PAW3222_SNIPE_CPI.
+
+  snipe-divisor:
+    type: int
+    required: false
+    description: |
+      Additional precision divisor for snipe mode. Movement values are divided 
+      by this factor in addition to CPI reduction. Higher values = more precision.
+      If not specified, defaults to 2.
+
+  force-awake:
+    type: boolean
+    description: |
+      Initialize the sensor in "force awake" mode. This can also be enabled or
+      disabled in runtime by the application using the paw32xx_force_awake()
+      API.
+
+  rotation:
+    type: int
+    required: false
+    description: |
+      Physical rotation of the sensor in degrees. (0, 90, 180, 270)
+      Used for scroll direction mapping to ensure y-axis movement always triggers scroll.
+      For cursor movement rotation, use ZMK input-processors like zip_xy_transform.
+      If not specified, defaults to the value of CONFIG_PAW3222_SENSOR_ROTATION.
+
+  scroll-tick:
+    type: int
+    required: false
+    description: |
+      Threshold for scroll movement (delta value above which scroll is triggered).
+      If not specified, defaults to the value of CONFIG_PAW3222_SCROLL_TICK.
+
+  scroll-snipe-layers:
+    type: array
+    required: false
+    description: |
+      List of layer numbers to switch between using the scroll-snipe-layers feature.
+      Provides high-precision vertical scrolling.
+
+  scroll-horizontal-snipe-layers:
+    type: array
+    required: false
+    description: |
+      List of layer numbers to switch between using the horizontal scroll-snipe feature.
+      Provides high-precision horizontal scrolling.
+
+  scroll-snipe-divisor:
+    type: int
+    required: false
+    description: |
+      Additional precision divisor for scroll snipe mode. Scroll movement values are divided 
+      by this factor for ultra-precision scrolling. Higher values = more precision.
+      If not specified, defaults to CONFIG_PAW3222_SCROLL_SNIPE_DIVISOR.
+
+  scroll-snipe-tick:
+    type: int
+    required: false
+    description: |
+      Threshold for scroll movement in snipe mode (delta value above which scroll is triggered).
+      Should typically be higher than regular scroll-tick for finer control.
+      If not specified, defaults to CONFIG_PAW3222_SCROLL_SNIPE_TICK.
+
+  switch-method:
+    type: string
+    required: false
+    enum:
+      - "layer"
+      - "toggle"
+    default: "layer"
+    description: |
+      Method for switching input modes:
+      - "layer": Use ZMK layers (original method)
+      - "toggle": Use toggle key behavior
+      
+  input-processors:
+    type: phandle-array
+    required: false
+    description: List of input processors to apply to sensor data
