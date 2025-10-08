@@ -171,6 +171,14 @@ get_input_mode_for_current_layer(const struct device *dev) {
       }
     }
   }
+    // XY同時スクロール（BOTHSCROLL）
+    if (cfg->bothscroll_layers && cfg->bothscroll_layers_len > 0) {
+      for (size_t i = 0; i < cfg->bothscroll_layers_len; i++) {
+        if (curr_layer == cfg->bothscroll_layers[i]) {
+          return PAW32XX_BOTHSCROLL;
+        }
+      }
+    }
   return PAW32XX_MOVE;
 }
 
