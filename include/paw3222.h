@@ -43,6 +43,7 @@ enum paw32xx_current_mode {
   PAW32XX_MODE_SNIPE,                   /**< High-precision cursor movement mode */
   PAW32XX_MODE_SCROLL_SNIPE,            /**< High-precision vertical scrolling mode */
   PAW32XX_MODE_SCROLL_HORIZONTAL_SNIPE, /**< High-precision horizontal scrolling mode */
+  PAW32XX_MODE_BOTHSCROLL,              /**< XY同時スクロールモード */
 };
 
 /**
@@ -102,6 +103,8 @@ struct paw32xx_data {
   struct k_timer motion_timer;                /**< Timer for motion processing timeout */
   int16_t current_cpi;                        /**< Currently configured CPI value */
   int16_t scroll_accumulator;                 /**< Accumulator for smooth scrolling (reduced from int32_t) */
+  int16_t scroll_accumulator_x;               /**< X軸スクロール用 */
+  int16_t scroll_accumulator_y;               /**< Y軸スクロール用 */
 
   /* Mode switching state */
   enum paw32xx_current_mode current_mode;     /**< Current operational mode of the sensor */

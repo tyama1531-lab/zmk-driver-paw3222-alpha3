@@ -120,6 +120,8 @@ get_input_mode_for_current_layer(const struct device *dev) {
       return PAW32XX_SCROLL_SNIPE;
     case PAW32XX_MODE_SCROLL_HORIZONTAL_SNIPE:
       return PAW32XX_SCROLL_HORIZONTAL_SNIPE;
+    case PAW32XX_MODE_BOTHSCROLL:
+      return PAW32XX_BOTHSCROLL;
     default:
       return PAW32XX_MOVE;
     }
@@ -271,18 +273,14 @@ void paw32xx_motion_work_handler(struct k_work *work) {
 
   switch (input_mode) {
   case PAW32XX_MOVE: { // Normal cursor movement
-    // Send raw X/Y movement - let input-processors handle rotation
     input_report_rel(data->dev, INPUT_REL_X, x, false, K_NO_WAIT);
     input_report_rel(data->dev, INPUT_REL_Y, y, true, K_FOREVER);
     break;
   }
   case PAW32XX_SNIPE: { // High-precision cursor movement
-    // Apply additional precision scaling for snipe mode
-    // Reduce movement by configurable divisor for ultra-precision
-    uint8_t divisor = MAX(1, cfg->snipe_divisor); // Prevent division by zero
+    uint8_t divisor = MAX(1, cfg->snipe_divisor);
     int16_t snipe_x = x / divisor;
     int16_t snipe_y = y / divisor;
-
     input_report_rel(data->dev, INPUT_REL_X, snipe_x, false, K_NO_WAIT);
     input_report_rel(data->dev, INPUT_REL_Y, snipe_y, true, K_FOREVER);
     break;
@@ -307,7 +305,14 @@ void paw32xx_motion_work_handler(struct k_work *work) {
       process_scroll_input(data->dev, &data->scroll_accumulator, snipe_scroll_y, cfg->scroll_snipe_tick, true);
     }
     break;
-
+  case PAW32XX_MODE_BOTHSCROLL: // XY同時スクロール
+    {
+      // X軸スクロール値の算出（必要に応じて座標変換）
+      int16_t scroll_x = calculate_scroll_y(y, x, cfg->rotation); // X/Y入れ替えでX軸用
+      process_scroll_input(data->dev, &data->scroll_accumulator_x, scroll_x, cfg->scroll_tick, true);
+      process_scroll_input(data->dev, &data->scroll_accumulator_y, scroll_y, cfg->scroll_tick, false);
+    }
+    break;
   default:
     LOG_ERR("Unknown input_mode: %d", input_mode);
     break;
