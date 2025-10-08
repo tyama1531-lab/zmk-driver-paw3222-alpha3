@@ -71,6 +71,8 @@ struct paw32xx_config {
   int32_t *scroll_snipe_layers;                /**< Array of layer IDs for high-precision vertical scroll */
   size_t scroll_horizontal_snipe_layers_len;   /**< Number of horizontal scroll snipe layers defined */
   int32_t *scroll_horizontal_snipe_layers;     /**< Array of layer IDs for high-precision horizontal scroll */
+  size_t bothscroll_layers_len;                /**< Number of XY simultaneous scroll layers defined */
+  int32_t *bothscroll_layers;                   /**< Array of layer IDs for XY simultaneous scroll mode */
   
   /* Sensor configuration */
   int16_t res_cpi;                             /**< Default CPI resolution (608-4826) */
