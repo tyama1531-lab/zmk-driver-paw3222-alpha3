@@ -174,10 +174,10 @@ static int paw32xx_init(const struct device *dev)
               (static int32_t scroll_horizontal_snipe_layers##n[] =                         \
                    DT_INST_PROP(n, scroll_horizontal_snipe_layers);),                       \
               (/* Do nothing */))                                                           \
-  // XYシームレススクロール用レイヤー分岐の初期化・格納処理（PAW32XX_INIT(n)の直後に追加）
-  COND_CODE_1(DT_INST_NODE_HAS_PROP(n, bothscroll_layers),                                 \
-    (static int32_t bothscroll_layers##n[] = DT_INST_PROP(n, bothscroll_layers);),       \
-    (/* Do nothing */))                                                                   \
+  COND_CODE_1(DT_INST_NODE_HAS_PROP(n, bothscroll_layers),                                  \
+              (static int32_t bothscroll_layers##n[] =                                      \
+                   DT_INST_PROP(n, bothscroll_layers);),                                    \
+              (/* Do nothing */))                                                           \
   static const struct paw32xx_config paw32xx_cfg_##n = {                                    \
       .spi = SPI_DT_SPEC_INST_GET(n, PAW32XX_SPI_MODE, 0),                                  \
       .irq_gpio = GPIO_DT_SPEC_INST_GET(n, irq_gpios),                                      \
