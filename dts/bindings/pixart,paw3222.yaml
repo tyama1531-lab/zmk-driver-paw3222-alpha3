@@ -32,6 +32,12 @@ properties:
     description: |
       List of layer numbers to switch between using the scroll-layers feature.
 
+  bothscroll_layers:
+    type: array
+    required: false
+    description: |
+      List of layer numbers to enable XY seamless scroll (BOTHSCROLL mode).
+      
   scroll-horizontal-layers:
     type: array
     required: false
