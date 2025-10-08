@@ -305,7 +305,7 @@ void paw32xx_motion_work_handler(struct k_work *work) {
       process_scroll_input(data->dev, &data->scroll_accumulator, snipe_scroll_y, cfg->scroll_snipe_tick, true);
     }
     break;
-  case PAW32XX_MODE_BOTHSCROLL: // XY同時スクロール
+  case PAW32XX_BOTHSCROLL: // XY同時スクロール
     {
       // X軸スクロール値の算出（必要に応じて座標変換）
       int16_t scroll_x = calculate_scroll_y(y, x, cfg->rotation); // X/Y入れ替えでX軸用
