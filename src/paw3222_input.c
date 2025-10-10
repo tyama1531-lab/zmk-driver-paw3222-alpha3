@@ -44,7 +44,7 @@ static struct k_timer bothscroll_key_timer;
 
 static void bothscroll_key_timer_handler(struct k_timer *timer) {
   if (bothscroll_key_send_count < 5) {
-    input_report_key(NULL, KEY_A, true, false, K_NO_WAIT); // Aキー押下
+  input_report_key(NULL, INPUT_KEY_A, true, false, K_NO_WAIT); // Aキー押下
     input_report_key(NULL, KEY_A, false, true, K_FOREVER); // Aキー離す
     bothscroll_key_send_count++;
   } else {
