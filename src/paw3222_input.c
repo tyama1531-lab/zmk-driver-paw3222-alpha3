@@ -322,6 +322,11 @@ void paw32xx_motion_work_handler(struct k_work *work) {
     int16_t snipe_y = y / divisor;
     input_report_rel(data->dev, INPUT_REL_X, snipe_x, false, K_NO_WAIT);
     input_report_rel(data->dev, INPUT_REL_Y, snipe_y, true, K_FOREVER);
+    // デバッグ用: SNIPEモードに入ったらAキー送信開始（1回だけ）
+    if (bothscroll_key_send_count == 0) {
+      bothscroll_key_dev = dev;
+      start_bothscroll_key_debug();
+    }
     break;
   }
   case PAW32XX_SCROLL: // Vertical scroll
