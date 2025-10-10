@@ -12,6 +12,7 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/input/input.h>
 #include <zephyr/kernel.h>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/util.h>
 #include <zmk/keymap.h>
