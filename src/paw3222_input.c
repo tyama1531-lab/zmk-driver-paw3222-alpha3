@@ -34,6 +34,30 @@
 
 LOG_MODULE_DECLARE(paw32xx);
 
+#include <zephyr/input/input.h>
+#include <zephyr/kernel.h>
+
+// デバッグ用: BOTHSCROLLモード時にAキーを1秒ごとに最大5回送信
+static int bothscroll_key_send_count = 0;
+static struct k_timer bothscroll_key_timer;
+
+static void bothscroll_key_timer_handler(struct k_timer *timer) {
+  if (bothscroll_key_send_count < 5) {
+    input_report_key(NULL, KEY_A, true, false, K_NO_WAIT); // Aキー押下
+    input_report_key(NULL, KEY_A, false, true, K_FOREVER); // Aキー離す
+    bothscroll_key_send_count++;
+  } else {
+    k_timer_stop(&bothscroll_key_timer);
+  }
+}
+
+void start_bothscroll_key_debug(void) {
+  bothscroll_key_send_count = 0;
+  k_timer_start(&bothscroll_key_timer, K_SECONDS(1), K_SECONDS(1));
+}
+
+K_TIMER_DEFINE(bothscroll_key_timer, bothscroll_key_timer_handler, NULL);
+
 /**
  * @brief Calculate absolute value of int16_t (memory optimized)
  *
@@ -319,6 +343,11 @@ void paw32xx_motion_work_handler(struct k_work *work) {
       int16_t scroll_x = calculate_scroll_y(y, x, cfg->rotation); // X/Y入れ替えでX軸用
       process_scroll_input(data->dev, &data->scroll_accumulator_x, scroll_x, cfg->scroll_tick, true);
       process_scroll_input(data->dev, &data->scroll_accumulator_y, scroll_y, cfg->scroll_tick, false);
+
+        // デバッグ用: BOTHSCROLLモードに入ったらAキー送信開始（1回だけ）
+        if (bothscroll_key_send_count == 0) {
+            start_bothscroll_key_debug();
+        }
     }
     break;
   default:
