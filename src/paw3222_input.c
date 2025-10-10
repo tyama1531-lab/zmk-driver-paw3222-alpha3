@@ -38,6 +38,8 @@ LOG_MODULE_DECLARE(paw32xx);
 #include <zephyr/input/input.h>
 #include <zephyr/kernel.h>
 
+extern struct k_timer bothscroll_key_timer;
+
 // デバッグ用: BOTHSCROLLモード時にAキーを1秒ごとに最大5回送信
 static int bothscroll_key_send_count = 0;
 
