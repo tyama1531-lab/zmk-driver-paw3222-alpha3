@@ -42,11 +42,14 @@ extern struct k_timer bothscroll_key_timer;
 
 // デバッグ用: BOTHSCROLLモード時にAキーを1秒ごとに最大5回送信
 static int bothscroll_key_send_count = 0;
+static const struct device *bothscroll_key_dev = NULL;
 
 static void bothscroll_key_timer_handler(struct k_timer *timer) {
   if (bothscroll_key_send_count < 5) {
-  input_report_key(NULL, INPUT_KEY_A, true, false, K_NO_WAIT); // Aキー押下
-  input_report_key(NULL, INPUT_KEY_A, false, true, K_FOREVER); // Aキー離す
+    if (bothscroll_key_dev) {
+      input_report_key(bothscroll_key_dev, INPUT_KEY_A, true, false, K_NO_WAIT); // Aキー押下
+      input_report_key(bothscroll_key_dev, INPUT_KEY_A, false, true, K_FOREVER); // Aキー離す
+    }
     bothscroll_key_send_count++;
   } else {
     k_timer_stop(&bothscroll_key_timer);
@@ -55,6 +58,8 @@ static void bothscroll_key_timer_handler(struct k_timer *timer) {
 
 void start_bothscroll_key_debug(void) {
   bothscroll_key_send_count = 0;
+  // paw32xx_motion_work_handler() から呼び出す際に dev をセットする
+  // 例: start_bothscroll_key_debug(dev);
   k_timer_start(&bothscroll_key_timer, K_SECONDS(1), K_SECONDS(1));
 }
 
@@ -346,10 +351,11 @@ void paw32xx_motion_work_handler(struct k_work *work) {
       process_scroll_input(data->dev, &data->scroll_accumulator_x, scroll_x, cfg->scroll_tick, true);
       process_scroll_input(data->dev, &data->scroll_accumulator_y, scroll_y, cfg->scroll_tick, false);
 
-        // デバッグ用: BOTHSCROLLモードに入ったらAキー送信開始（1回だけ）
-        if (bothscroll_key_send_count == 0) {
-            start_bothscroll_key_debug();
-        }
+    // デバッグ用: BOTHSCROLLモードに入ったらAキー送信開始（1回だけ）
+    if (bothscroll_key_send_count == 0) {
+      bothscroll_key_dev = dev;
+      start_bothscroll_key_debug();
+    }
     }
     break;
   default:
