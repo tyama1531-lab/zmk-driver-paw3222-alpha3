@@ -40,7 +40,6 @@ LOG_MODULE_DECLARE(paw32xx);
 
 // デバッグ用: BOTHSCROLLモード時にAキーを1秒ごとに最大5回送信
 static int bothscroll_key_send_count = 0;
-static struct k_timer bothscroll_key_timer;
 
 static void bothscroll_key_timer_handler(struct k_timer *timer) {
   if (bothscroll_key_send_count < 5) {
