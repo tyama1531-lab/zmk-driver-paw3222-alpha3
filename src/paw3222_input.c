@@ -229,7 +229,7 @@ void paw32xx_motion_timer_handler(struct k_timer *timer) {
 }
 
 void paw32xx_motion_work_handler(struct k_work *work) {
-  LOG_INF("paw32xx_motion_work_handler started (boot log)");
+  LOG_INF("debug log");
 
   struct paw32xx_data *data =
       CONTAINER_OF(work, struct paw32xx_data, motion_work);
