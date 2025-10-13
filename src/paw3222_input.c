@@ -122,8 +122,6 @@ get_input_mode_for_current_layer(const struct device *dev) {
     case PAW32XX_MODE_SCROLL:
       return PAW32XX_SCROLL;
     case PAW32XX_MODE_SCROLL_HORIZONTAL:
-      /* XYSCROLL_DEBUG_LOG */
-      LOG_INF("data->current_mode=%d", data->current_mode); // XYSCROLL_DEBUG_LOG
       return PAW32XX_SCROLL_HORIZONTAL;
     case PAW32XX_MODE_SNIPE:
       return PAW32XX_SNIPE;
@@ -132,6 +130,8 @@ get_input_mode_for_current_layer(const struct device *dev) {
     case PAW32XX_MODE_SCROLL_HORIZONTAL_SNIPE:
       return PAW32XX_SCROLL_HORIZONTAL_SNIPE;
     case PAW32XX_MODE_BOTHSCROLL:
+      /* XYSCROLL_DEBUG_LOG */
+      LOG_INF("data->current_mode=%d", data->current_mode); // XYSCROLL_DEBUG_LOG
       return PAW32XX_BOTHSCROLL;
     default:
       return PAW32XX_MOVE;
@@ -289,6 +289,9 @@ void paw32xx_motion_work_handler(struct k_work *work) {
       LOG_WRN("Failed to set CPI to %d: %d", target_cpi, ret);
     }
   }
+
+  /* XYSCROLL_DEBUG_LOG */
+  LOG_INF("input_mode=%d", input_mode); // XYSCROLL_DEBUG_LOG
 
   switch (input_mode) {
   case PAW32XX_MOVE: { // Normal cursor movement
