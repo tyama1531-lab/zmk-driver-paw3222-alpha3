@@ -115,7 +115,7 @@ get_input_mode_for_current_layer(const struct device *dev) {
   const struct paw32xx_config *cfg = dev->config;
   struct paw32xx_data *data = dev->data;
 
-  LOG_INF("curr_layer=%d, bothscroll_layers_len=%d, bothscroll_layers[0]=%d", curr_layer, cfg->bothscroll_layers_len, cfg->bothscroll_layers ? cfg->bothscroll_layers[0] : -1); // XYSCROLL_DEBUG_LOG
+  LOG_INF("cfg->switch_method=%d, data->current_mode=%d", cfg->switch_method, data->current_mode); // XYSCROLL_DEBUG_LOG
   
   // Check if using behavior-based switching instead of layer-based
   if (cfg->switch_method != PAW32XX_SWITCH_LAYER) {
