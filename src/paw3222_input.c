@@ -123,7 +123,7 @@ get_input_mode_for_current_layer(const struct device *dev) {
       return PAW32XX_SCROLL;
     case PAW32XX_MODE_SCROLL_HORIZONTAL:
       /* XYSCROLL_DEBUG_LOG */
-      LOG_INF("input_report_rel XY: x=%d, y=%d", scroll_x, scroll_y); // XYSCROLL_DEBUG_LOG
+      LOG_INF("data->current_mode=%d", data->current_mode); // XYSCROLL_DEBUG_LOG
       return PAW32XX_SCROLL_HORIZONTAL;
     case PAW32XX_MODE_SNIPE:
       return PAW32XX_SNIPE;
