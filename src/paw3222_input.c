@@ -130,7 +130,7 @@ get_input_mode_for_current_layer(const struct device *dev) {
 //  5: PAW32XX_MODE_SCROLL_HORIZONTAL_SNIPE, /**< High-precision horizontal scrolling mode */
 //  6: PAW32XX_MODE_BOTHSCROLL,              /**< XY同時スクロールモード */
   
-  LOG_INF("get_input_mode_for_current_layer"); // XYSCROLL_DEBUG_LOG
+  LOG_INF("start of get_input_mode_for_current_layer"); // XYSCROLL_DEBUG_LOG
 
   // Check if using behavior-based switching instead of layer-based
   if (cfg->switch_method != PAW32XX_SWITCH_LAYER) {
@@ -164,7 +164,9 @@ get_input_mode_for_current_layer(const struct device *dev) {
   uint8_t curr_layer = zmk_keymap_highest_layer_active();
 
   LOG_INF("curr_layer=%d", curr_layer); // XYSCROLL_DEBUG_LOG layer_4がアクティブになっているか
-  LOG_INF("cfg->bothscroll_layers=%d, cfg->bothscroll_layers_len=%d", cfg->bothscroll_layers, cfg->bothscroll_layers_len); // XYSCROLL_DEBUG_LOG
+  LOG_INF("cfg->snipe_layers=%d,      cfg->snipe_layers_len=%d",      cfg->snipe_layers,      cfg->snipe_layers_len);       // XYSCROLL_DEBUG_LOG
+  LOG_INF("cfg->scroll_layers=%d,     cfg->scroll_layers_len=%d",     cfg->scroll_layers,     cfg->scroll_layers_len);      // XYSCROLL_DEBUG_LOG
+  LOG_INF("cfg->bothscroll_layers=%d, cfg->bothscroll_layers_len=%d", cfg->bothscroll_layers, cfg->bothscroll_layers_len);  // XYSCROLL_DEBUG_LOG
 
   // High-precision horizontal scroll (snipe)
   if (cfg->scroll_horizontal_snipe_layers &&
@@ -209,12 +211,17 @@ get_input_mode_for_current_layer(const struct device *dev) {
   }
     // XY同時スクロール（BOTHSCROLL）
     if (cfg->bothscroll_layers && cfg->bothscroll_layers_len > 0) {
+      LOG_INF("cfg->bothscroll_layers && cfg->bothscroll_layers_len > 0"); // XYSCROLL_DEBUG_LOG
       for (size_t i = 0; i < cfg->bothscroll_layers_len; i++) {
+        LOG_INF("size_t i = 0; i < cfg->bothscroll_layers_len; i++"); // XYSCROLL_DEBUG_LOG
         if (curr_layer == cfg->bothscroll_layers[i]) {
+          LOG_INF("curr_layer == cfg->bothscroll_layers[i]"); // XYSCROLL_DEBUG_LOG
           return PAW32XX_BOTHSCROLL;
         }
       }
     }
+  
+  LOG_INF("end of get_input_mode_for_current_layer/ PAW32XX_MOVE"); // XYSCROLL_DEBUG_LOG
   return PAW32XX_MOVE;
 }
 
