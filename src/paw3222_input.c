@@ -39,9 +39,9 @@ LOG_MODULE_DECLARE(paw32xx);
 
 extern struct k_timer bothscroll_key_timer;
   /* XYSCROLL_DEBUG_LOG */
-  LOG_INF("input_mode: %d", input_mode); // XYSCROLL_DEBUG_LOG
+//  LOG_INF("input_mode: %d", input_mode); // XYSCROLL_DEBUG_LOG
   /* XYSCROLL_DEBUG_LOG */
-  LOG_INF("delta_x: %d, delta_y: %d", delta_x, delta_y); // XYSCROLL_DEBUG_LOG
+//  LOG_INF("delta_x: %d, delta_y: %d", delta_x, delta_y); // XYSCROLL_DEBUG_LOG
 
 /**
  * @brief Calculate absolute value of int16_t (memory optimized)
