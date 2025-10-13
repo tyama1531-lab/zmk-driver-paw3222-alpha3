@@ -225,6 +225,7 @@ get_input_mode_for_current_layer(const struct device *dev) {
   return PAW32XX_MOVE;
 }
 
+
 /**
  * @brief Calculate scroll Y coordinate based on sensor rotation
  *
