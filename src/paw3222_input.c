@@ -38,6 +38,10 @@ LOG_MODULE_DECLARE(paw32xx);
 #include <zephyr/kernel.h>
 
 extern struct k_timer bothscroll_key_timer;
+  /* XYSCROLL_DEBUG_LOG */
+  LOG_INF("input_mode: %d", input_mode); // XYSCROLL_DEBUG_LOG
+  /* XYSCROLL_DEBUG_LOG */
+  LOG_INF("delta_x: %d, delta_y: %d", delta_x, delta_y); // XYSCROLL_DEBUG_LOG
 
 /**
  * @brief Calculate absolute value of int16_t (memory optimized)
@@ -118,6 +122,8 @@ get_input_mode_for_current_layer(const struct device *dev) {
     case PAW32XX_MODE_SCROLL:
       return PAW32XX_SCROLL;
     case PAW32XX_MODE_SCROLL_HORIZONTAL:
+      /* XYSCROLL_DEBUG_LOG */
+      LOG_INF("input_report_rel XY: x=%d, y=%d", scroll_x, scroll_y); // XYSCROLL_DEBUG_LOG
       return PAW32XX_SCROLL_HORIZONTAL;
     case PAW32XX_MODE_SNIPE:
       return PAW32XX_SNIPE;
