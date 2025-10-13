@@ -187,6 +187,11 @@ static int paw32xx_init(const struct device *dev)
       .scroll_layers_len =                                                                  \
           COND_CODE_1(DT_INST_NODE_HAS_PROP(n, scroll_layers),                              \
                       (DT_INST_PROP_LEN(n, scroll_layers)), (0)),                           \
+      .bothscroll_layers = COND_CODE_1(DT_INST_NODE_HAS_PROP(n, bothscroll_layers),         \
+                                   (bothscroll_layers##n), (NULL)),                         \
+      .bothscroll_layers_len =                                                              \
+          COND_CODE_1(DT_INST_NODE_HAS_PROP(n, bothscroll_layers),                          \
+                      (DT_INST_PROP_LEN(n, bothscroll_layers)), (0)),                       \
       .snipe_layers = COND_CODE_1(DT_INST_NODE_HAS_PROP(n, snipe_layers),                   \
                                   (snipe_layers##n), (NULL)),                               \
       .snipe_layers_len =                                                                   \
