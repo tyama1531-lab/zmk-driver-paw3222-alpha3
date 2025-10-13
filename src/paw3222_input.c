@@ -129,6 +129,8 @@ get_input_mode_for_current_layer(const struct device *dev) {
 //  4: PAW32XX_MODE_SCROLL_SNIPE,            /**< High-precision vertical scrolling mode */
 //  5: PAW32XX_MODE_SCROLL_HORIZONTAL_SNIPE, /**< High-precision horizontal scrolling mode */
 //  6: PAW32XX_MODE_BOTHSCROLL,              /**< XY同時スクロールモード */
+  
+  LOG_INF("get_input_mode_for_current_layer"); // XYSCROLL_DEBUG_LOG
 
   // Check if using behavior-based switching instead of layer-based
   if (cfg->switch_method != PAW32XX_SWITCH_LAYER) {
@@ -141,18 +143,23 @@ get_input_mode_for_current_layer(const struct device *dev) {
     case PAW32XX_MODE_SNIPE:
       return PAW32XX_SNIPE;
     case PAW32XX_MODE_SCROLL_SNIPE:
+      LOG_INF("switch (data->current_mode)=PAW32XX_SCROLL_SNIPE"); // XYSCROLL_DEBUG_LOG
       return PAW32XX_SCROLL_SNIPE;
     case PAW32XX_MODE_SCROLL_HORIZONTAL_SNIPE:
       return PAW32XX_SCROLL_HORIZONTAL_SNIPE;
     case PAW32XX_MODE_BOTHSCROLL:
       /* XYSCROLL_DEBUG_LOG */
       LOG_INF("data->current_mode=%d", data->current_mode); // XYSCROLL_DEBUG_LOG
+      LOG_INF("switch (data->current_mode)=PAW32XX_BOTHSCROLL"); // XYSCROLL_DEBUG_LOG
       return PAW32XX_BOTHSCROLL;
     default:
+      LOG_INF("switch (data->current_mode)=PAW32XX_MOVE"); // XYSCROLL_DEBUG_LOG
       return PAW32XX_MOVE;
     }
   }
 
+  LOG_INF("end of switch (data->current_mode)"); // XYSCROLL_DEBUG_LOG
+  
   // Original layer-based switching logic
   uint8_t curr_layer = zmk_keymap_highest_layer_active();
 
