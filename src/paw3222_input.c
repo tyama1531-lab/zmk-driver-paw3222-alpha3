@@ -115,8 +115,21 @@ get_input_mode_for_current_layer(const struct device *dev) {
   const struct paw32xx_config *cfg = dev->config;
   struct paw32xx_data *data = dev->data;
 
-  LOG_INF("cfg->switch_method=%d, data->current_mode=%d", cfg->switch_method, data->current_mode); // XYSCROLL_DEBUG_LOG
-  
+// LOG_INF("cfg->switch_method=%d, data->current_mode=%d", cfg->switch_method, data->current_mode); // XYSCROLL_DEBUG_LOG
+
+// enum paw32xx_mode_switch_method => cfg->switch_method
+//  0: PAW32XX_SWITCH_LAYER,  /**< Original layer-based switching using ZMK layers */
+//  1: PAW32XX_SWITCH_TOGGLE, /**< Toggle key based switching using behavior API *
+
+// enum paw32xx_current_mode => data->current_mode
+//  0: PAW32XX_MODE_MOVE,                    /**< Standard cursor movement mode */
+//  1: PAW32XX_MODE_SCROLL,                  /**< Vertical scrolling mode */
+//  2: PAW32XX_MODE_SCROLL_HORIZONTAL,       /**< Horizontal scrolling mode */
+//  3: PAW32XX_MODE_SNIPE,                   /**< High-precision cursor movement mode */
+//  4: PAW32XX_MODE_SCROLL_SNIPE,            /**< High-precision vertical scrolling mode */
+//  5: PAW32XX_MODE_SCROLL_HORIZONTAL_SNIPE, /**< High-precision horizontal scrolling mode */
+//  6: PAW32XX_MODE_BOTHSCROLL,              /**< XY同時スクロールモード */
+
   // Check if using behavior-based switching instead of layer-based
   if (cfg->switch_method != PAW32XX_SWITCH_LAYER) {
     // Convert current mode state to input mode enum
@@ -142,6 +155,9 @@ get_input_mode_for_current_layer(const struct device *dev) {
 
   // Original layer-based switching logic
   uint8_t curr_layer = zmk_keymap_highest_layer_active();
+
+  LOG_INF("curr_layer=%d", curr_layer); // XYSCROLL_DEBUG_LOG layer_4がアクティブになっているか
+  LOG_INF("cfg->bothscroll_layers=%d, cfg->bothscroll_layers_len=%d", cfg->bothscroll_layers, cfg->bothscroll_layers_len); // XYSCROLL_DEBUG_LOG
 
   // High-precision horizontal scroll (snipe)
   if (cfg->scroll_horizontal_snipe_layers &&
