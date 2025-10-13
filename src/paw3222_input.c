@@ -322,6 +322,7 @@ void paw32xx_motion_work_handler(struct k_work *work) {
       LOG_WRN("Failed to set CPI to %d: %d", target_cpi, ret);
     }
   }
+  
 
   /* XYSCROLL_DEBUG_LOG */
   LOG_INF("input_mode=%d", input_mode); // XYSCROLL_DEBUG_LOG
