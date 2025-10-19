@@ -1,4 +1,4 @@
-C:\Users\tomo0\Downloads\Auto-KDK\zmk-driver-paw3222-alpha3\include\paw3222.h/*
+/*
  * Copyright 2024 Google LLC
  * Modifications Copyright 2025 sekigon-gonnoc
  * Modifications Copyright 2025 nuovotaka
