@@ -420,14 +420,18 @@ void paw32xx_motion_handler(const struct device *gpio_dev,
   const struct device *dev = data->dev;
   const struct paw32xx_config *cfg = dev->config;
 
-  gpio_pin_interrupt_configure_dt(&cfg->irq_gpio, GPIO_INT_DISABLE);
-  k_timer_stop(&data->motion_timer);
-  /* If idle, wake up sensor and resume processing */
+  /* If idle, wake up sensor and resume processing -- check first before
+   * disabling the IRQ or stopping timers to avoid masking the wake-up event.
+   */
   if (paw32xx_idle) {
     LOG_INF("PAW32XX: IRQ while idle -> waking up");
     paw32xx_idle_exit(dev);
     return;
   }
+
+  /* Disable IRQ and stop the motion timer while we process this IRQ */
+  gpio_pin_interrupt_configure_dt(&cfg->irq_gpio, GPIO_INT_DISABLE);
+  k_timer_stop(&data->motion_timer);
   k_work_submit(&data->motion_work);
 }
 
@@ -438,8 +442,11 @@ void paw32xx_idle_timeout_handler(struct k_timer *timer) {
 
   LOG_INF("PAW32XX: idle timeout reached, entering idle");
 
-  /* disable irq */
-  gpio_pin_interrupt_configure_dt(&cfg->irq_gpio, GPIO_INT_DISABLE);
+  /* keep IRQ enabled so motion IRQ can wake the device while idle */
+  /* Previously we disabled the IRQ here which prevented the IRQ callback
+   * from being invoked on motion; leaving it enabled allows the GPIO
+   * callback to run and call paw32xx_idle_exit().
+   */
 
   /* cancel motion processing */
   k_work_cancel(&data->motion_work);
