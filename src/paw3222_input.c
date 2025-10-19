@@ -15,6 +15,7 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/util.h>
 #include <zmk/keymap.h>
+#include <zephyr/init.h>
 
 // Utility macros
 #ifndef CLAMP
@@ -314,16 +315,14 @@ void paw32xx_motion_work_handler(struct k_work *work) {
   }
 
   /* reset idle timer on any motion activity */
-  if (!paw32xx_idle_timer_inited) {
-    paw32xx_idle_dev = dev;
-    k_timer_init(&paw32xx_idle_timer, paw32xx_idle_timeout_handler, NULL);
-    paw32xx_idle_timer_inited = true;
-  }
+  /* ensure timeout handler knows which device instance to act on */
+  paw32xx_idle_dev = dev;
   /* if we were idle, wake up first */
   if (paw32xx_idle) {
     LOG_INF("PAW32XX: motion detected while idle -> waking up");
     paw32xx_idle_exit(dev);
   }
+  /* start/restart the idle timer (timer is initialized at system init) */
   k_timer_start(&paw32xx_idle_timer, K_SECONDS(PAW32XX_IDLE_TIMEOUT_SECONDS), K_NO_WAIT);
 
   // For scroll modes, we need to transform coordinates based on rotation
@@ -487,3 +486,14 @@ void paw32xx_idle_exit(const struct device *dev) {
   k_timer_start(&paw32xx_idle_timer, K_SECONDS(PAW32XX_IDLE_TIMEOUT_SECONDS), K_NO_WAIT);
   LOG_INF("PAW32XX: exited idle and resumed normal operation");
 }
+
+static int paw32xx_idle_init(const struct device *dev) {
+  ARG_UNUSED(dev);
+  if (!paw32xx_idle_timer_inited) {
+    k_timer_init(&paw32xx_idle_timer, paw32xx_idle_timeout_handler, NULL);
+    paw32xx_idle_timer_inited = true;
+  }
+  return 0;
+}
+
+SYS_INIT(paw32xx_idle_init, POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
