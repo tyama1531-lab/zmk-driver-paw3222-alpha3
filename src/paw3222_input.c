@@ -33,7 +33,7 @@
 #include "paw3222_regs.h"
 #include "paw3222_spi.h"
 
-LOG_MODULE_DECLARE(paw32xx);
+LOG_MODULE_REGISTER(paw32xx);
 
 #include <zephyr/input/input.h>
 #include <zephyr/kernel.h>

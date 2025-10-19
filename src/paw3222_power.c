@@ -7,8 +7,6 @@
 #include <zephyr/logging/log.h>
 #include "paw3222_power.h"
 
-LOG_MODULE_DECLARE(paw32xx);
-
 __attribute__((weak)) int paw3222_set_sleep(const struct device *dev, bool sleep)
 {
     ARG_UNUSED(dev);
