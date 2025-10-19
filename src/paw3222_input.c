@@ -39,12 +39,12 @@ LOG_MODULE_DECLARE(paw32xx);
 #include <zephyr/kernel.h>
 
 /* Idle (no-motion) handling
- * - If no motion activity for PAW32XX_IDLE_TIMEOUT_SECONDS, enter idle:
- *   disable IRQ, cancel motion work/timer.  Lightweight idle (sensor not fully powered down).
+ * - If no motion activity for CONFIG_PAW3222_IDLE_TIMEOUT_SECONDS, enter idle:
+ *   cancel motion work/timer. This uses a Kconfig-configurable timeout.
  * - Wake on motion IRQ or motion activity: re-enable IRQ, restart motion work/timer.
  */
-#define PAW32XX_IDLE_TIMEOUT_SECONDS 300 /* 5 minutes */
 
+/* Use Kconfig-defined timeout (seconds). Falls back to 300 via header if not set. */
 static struct k_timer paw32xx_idle_timer;
 static const struct device *paw32xx_idle_dev;
 static volatile bool paw32xx_idle = false;
@@ -55,17 +55,16 @@ void paw32xx_idle_enter(const struct device *dev);
 void paw32xx_idle_exit(const struct device *dev);
 
 extern struct k_timer bothscroll_key_timer;
-  /* XYSCROLL_DEBUG_LOG */
-//  LOG_INF("input_mode: %d", input_mode); // XYSCROLL_DEBUG_LOG
-  /* XYSCROLL_DEBUG_LOG */
-//  LOG_INF("delta_x: %d, delta_y: %d", delta_x, delta_y); // XYSCROLL_DEBUG_LOG
 
 /**
  * @brief Calculate absolute value of int16_t (memory optimized)
  *
  * Computes the absolute value of a 16-bit signed integer without using
  * the standard library abs() function. This inline function is optimized
- * for memory usage and performance in the motion processing path.
+/* Idle (no-motion) handling
+ * - If no motion activity for CONFIG_PAW3222_IDLE_TIMEOUT_SECONDS, enter idle:
+ *   disable IRQ, cancel motion work/timer.  Lightweight idle (sensor not fully powered down).
+ */
  *
  * @param value Input signed 16-bit integer
  * 
@@ -323,7 +322,7 @@ void paw32xx_motion_work_handler(struct k_work *work) {
     paw32xx_idle_exit(dev);
   }
   /* start/restart the idle timer (timer is initialized at system init) */
-  k_timer_start(&paw32xx_idle_timer, K_SECONDS(PAW32XX_IDLE_TIMEOUT_SECONDS), K_NO_WAIT);
+  k_timer_start(&paw32xx_idle_timer, K_SECONDS(CONFIG_PAW3222_IDLE_TIMEOUT_SECONDS), K_NO_WAIT);
 
   // For scroll modes, we need to transform coordinates based on rotation
   // to ensure y-axis movement always triggers scroll regardless of sensor
@@ -503,7 +502,7 @@ void paw32xx_idle_exit(const struct device *dev) {
 
   paw32xx_idle = false;
   /* restart idle timer */
-  k_timer_start(&paw32xx_idle_timer, K_SECONDS(PAW32XX_IDLE_TIMEOUT_SECONDS), K_NO_WAIT);
+  k_timer_start(&paw32xx_idle_timer, K_SECONDS(CONFIG_PAW3222_IDLE_TIMEOUT_SECONDS), K_NO_WAIT);
   LOG_INF("PAW32XX: exited idle and resumed normal operation");
 }
 

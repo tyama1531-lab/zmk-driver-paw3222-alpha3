@@ -1,3 +1,10 @@
+config PAW3222_IDLE_TIMEOUT_SECONDS
+    int "PAW3222 idle timeout (seconds)"
+    default 300
+    range 1 86400
+    help
+      Idle timeout in seconds before the PAW3222 driver enters idle mode.
+      Use smaller values for testing (e.g. 5) and larger values for normal operation (e.g. 300).
 menuconfig PAW3222
   bool "PAW3222 mouse optical sensor"
   select SPI
