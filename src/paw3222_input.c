@@ -477,11 +477,13 @@ void paw32xx_idle_exit(const struct device *dev) {
   }
 
 #ifdef CONFIG_PAW3222_POWER_CTRL
-  rc = paw3222_set_sleep(dev, false);
-  if (rc) {
-    LOG_WRN("PAW32XX: paw3222_set_sleep(false) failed: %d", rc);
-  } else {
-    LOG_INF("PAW32XX: sensor wake request succeeded");
+  {
+    int rc = paw3222_set_sleep(dev, false);
+    if (rc) {
+      LOG_WRN("PAW32XX: paw3222_set_sleep(false) failed: %d", rc);
+    } else {
+      LOG_INF("PAW32XX: sensor wake request succeeded");
+    }
   }
 #endif
 
@@ -498,8 +500,7 @@ void paw32xx_idle_exit(const struct device *dev) {
   LOG_INF("PAW32XX: exited idle and resumed normal operation");
 }
 
-static int paw32xx_idle_init(const struct device *dev) {
-  ARG_UNUSED(dev);
+static int paw32xx_idle_init(void) {
   if (!paw32xx_idle_timer_inited) {
     k_timer_init(&paw32xx_idle_timer, paw32xx_idle_timeout_handler, NULL);
     paw32xx_idle_timer_inited = true;
