@@ -7,6 +7,13 @@
 #include <zephyr/logging/log.h>
 #include "paw3222_power.h"
 
+/* Declare the paw32xx logging module here so logging macros (LOG_INF/LOG_ERR)
+ * used in this file (including the weak stub) can reference the module's
+ * __log_level and other externs. The module itself is registered in
+ * `paw3222_input.c` with LOG_MODULE_REGISTER(paw32xx);
+ */
+LOG_MODULE_DECLARE(paw32xx);
+
 __attribute__((weak)) int paw3222_set_sleep(const struct device *dev, bool sleep)
 {
     ARG_UNUSED(dev);
@@ -40,7 +47,6 @@ __attribute__((weak)) int paw3222_set_sleep(const struct device *dev, bool sleep
 #include "paw3222_spi.h"
 #include "paw3222_power.h"
 
-LOG_MODULE_DECLARE(paw32xx);
 
 int paw32xx_set_resolution(const struct device *dev, uint16_t res_cpi) {
     uint8_t val;
