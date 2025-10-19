@@ -119,4 +119,10 @@ void paw32xx_motion_work_handler(struct k_work *work);
 void paw32xx_motion_handler(const struct device *gpio_dev,
                             struct gpio_callback *cb, uint32_t pins);
 
+/* Idle support: timeout and handlers */
+#define PAW32XX_IDLE_TIMEOUT_SECONDS 300
+void paw32xx_idle_timeout_handler(struct k_timer *timer);
+void paw32xx_idle_enter(const struct device *dev);
+void paw32xx_idle_exit(const struct device *dev);
+
 #endif /* PAW3222_INPUT_H_ */

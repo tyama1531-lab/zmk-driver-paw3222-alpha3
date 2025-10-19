@@ -1,4 +1,4 @@
-/*
+C:\Users\tomo0\Downloads\Auto-KDK\zmk-driver-paw3222-alpha3\include\paw3222.h/*
  * Copyright 2024 Google LLC
  * Modifications Copyright 2025 sekigon-gonnoc
  * Modifications Copyright 2025 nuovotaka
@@ -111,6 +111,9 @@ struct paw32xx_data {
   /* Mode switching state */
   enum paw32xx_current_mode current_mode;     /**< Current operational mode of the sensor */
   bool mode_toggle_state;                     /**< Toggle state for behavior-based mode switching */
+  /* Idle state support */
+  struct k_timer idle_timer;                  /**< Idle timer for inactivity-based idle */
+  bool idle;                                  /**< True when driver is in idle state */
 };
 
 #endif /* ZEPHYR_INCLUDE_INPUT_PAW32XX_H_ */

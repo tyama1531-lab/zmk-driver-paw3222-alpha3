@@ -37,6 +37,22 @@ LOG_MODULE_DECLARE(paw32xx);
 #include <zephyr/input/input.h>
 #include <zephyr/kernel.h>
 
+/* Idle (no-motion) handling
+ * - If no motion activity for PAW32XX_IDLE_TIMEOUT_SECONDS, enter idle:
+ *   disable IRQ, cancel motion work/timer.  Lightweight idle (sensor not fully powered down).
+ * - Wake on motion IRQ or motion activity: re-enable IRQ, restart motion work/timer.
+ */
+#define PAW32XX_IDLE_TIMEOUT_SECONDS 300 /* 5 minutes */
+
+static struct k_timer paw32xx_idle_timer;
+static const struct device *paw32xx_idle_dev;
+static volatile bool paw32xx_idle = false;
+static volatile bool paw32xx_idle_timer_inited = false;
+
+void paw32xx_idle_timeout_handler(struct k_timer *timer);
+void paw32xx_idle_enter(const struct device *dev);
+void paw32xx_idle_exit(const struct device *dev);
+
 extern struct k_timer bothscroll_key_timer;
   /* XYSCROLL_DEBUG_LOG */
 //  LOG_INF("input_mode: %d", input_mode); // XYSCROLL_DEBUG_LOG
@@ -297,6 +313,19 @@ void paw32xx_motion_work_handler(struct k_work *work) {
     goto cleanup;
   }
 
+  /* reset idle timer on any motion activity */
+  if (!paw32xx_idle_timer_inited) {
+    paw32xx_idle_dev = dev;
+    k_timer_init(&paw32xx_idle_timer, paw32xx_idle_timeout_handler, NULL);
+    paw32xx_idle_timer_inited = true;
+  }
+  /* if we were idle, wake up first */
+  if (paw32xx_idle) {
+    LOG_INF("PAW32XX: motion detected while idle -> waking up");
+    paw32xx_idle_exit(dev);
+  }
+  k_timer_start(&paw32xx_idle_timer, K_SECONDS(PAW32XX_IDLE_TIMEOUT_SECONDS), K_NO_WAIT);
+
   // For scroll modes, we need to transform coordinates based on rotation
   // to ensure y-axis movement always triggers scroll regardless of sensor
   // orientation
@@ -394,5 +423,67 @@ void paw32xx_motion_handler(const struct device *gpio_dev,
 
   gpio_pin_interrupt_configure_dt(&cfg->irq_gpio, GPIO_INT_DISABLE);
   k_timer_stop(&data->motion_timer);
+  /* If idle, wake up sensor and resume processing */
+  if (paw32xx_idle) {
+    LOG_INF("PAW32XX: IRQ while idle -> waking up");
+    paw32xx_idle_exit(dev);
+    return;
+  }
   k_work_submit(&data->motion_work);
+}
+
+void paw32xx_idle_timeout_handler(struct k_timer *timer) {
+  const struct device *dev = paw32xx_idle_dev;
+  struct paw32xx_data *data = dev->data;
+  const struct paw32xx_config *cfg = dev->config;
+
+  LOG_INF("PAW32XX: idle timeout reached, entering idle");
+
+  /* disable irq */
+  gpio_pin_interrupt_configure_dt(&cfg->irq_gpio, GPIO_INT_DISABLE);
+
+  /* cancel motion processing */
+  k_work_cancel(&data->motion_work);
+  k_timer_stop(&data->motion_timer);
+
+  /* attempt to put sensor to low-power if available */
+#ifdef CONFIG_PAW3222_POWER_CTRL
+  (void)paw3222_set_sleep(dev, true);
+#endif
+
+  paw32xx_idle = true;
+}
+
+void paw32xx_idle_enter(const struct device *dev) {
+  /* wrapper if needed in future */
+  (void)dev;
+}
+
+void paw32xx_idle_exit(const struct device *dev) {
+  struct paw32xx_data *data = dev->data;
+  const struct paw32xx_config *cfg = dev->config;
+  int rc;
+
+  if (!paw32xx_idle) {
+    return;
+  }
+
+#ifdef CONFIG_PAW3222_POWER_CTRL
+  rc = paw3222_set_sleep(dev, false);
+  if (rc) {
+    LOG_WRN("PAW32XX: paw3222_set_sleep(false) failed: %d", rc);
+  }
+#endif
+
+  /* re-enable irq */
+  gpio_pin_interrupt_configure_dt(&cfg->irq_gpio, GPIO_INT_EDGE_TO_ACTIVE);
+
+  /* restart motion processing */
+  k_timer_start(&data->motion_timer, K_MSEC(15), K_NO_WAIT);
+  k_work_submit(&data->motion_work);
+
+  paw32xx_idle = false;
+  /* restart idle timer */
+  k_timer_start(&paw32xx_idle_timer, K_SECONDS(PAW32XX_IDLE_TIMEOUT_SECONDS), K_NO_WAIT);
+  LOG_INF("PAW32XX: exited idle and resumed normal operation");
 }
