@@ -447,7 +447,16 @@ void paw32xx_idle_timeout_handler(struct k_timer *timer) {
 
   /* attempt to put sensor to low-power if available */
 #ifdef CONFIG_PAW3222_POWER_CTRL
+#if defined(CONFIG_PAW3222_POWER_CTRL)
+  int rc_sleep = paw3222_set_sleep(dev, true);
+  if (rc_sleep) {
+    LOG_WRN("PAW32XX: paw3222_set_sleep(true) failed: %d", rc_sleep);
+  } else {
+    LOG_INF("PAW32XX: sensor set to sleep");
+  }
+#else
   (void)paw3222_set_sleep(dev, true);
+#endif
 #endif
 
   paw32xx_idle = true;
@@ -471,6 +480,8 @@ void paw32xx_idle_exit(const struct device *dev) {
   rc = paw3222_set_sleep(dev, false);
   if (rc) {
     LOG_WRN("PAW32XX: paw3222_set_sleep(false) failed: %d", rc);
+  } else {
+    LOG_INF("PAW32XX: sensor wake request succeeded");
   }
 #endif
 

@@ -1,3 +1,25 @@
+/* Weak stub for paw3222 power control. If a platform provides
+ * a real implementation, it should define paw3222_set_sleep without
+ * the weak attribute to override this stub.
+ */
+
+#include <zephyr/device.h>
+#include <zephyr/logging/log.h>
+#include "paw3222_power.h"
+
+LOG_MODULE_DECLARE(paw32xx, CONFIG_PAW3222_LOG_LEVEL);
+
+__attribute__((weak)) int paw3222_set_sleep(const struct device *dev, bool sleep)
+{
+    ARG_UNUSED(dev);
+    if (sleep) {
+        LOG_INF("PAW32XX: (stub) request to set sensor sleep");
+    } else {
+        LOG_INF("PAW32XX: (stub) request to wake sensor");
+    }
+    /* Return 0 to indicate success for stub */
+    return 0;
+}
 /*
  * Copyright 2024 Google LLC
  * Modifications Copyright 2025 sekigon-gonnoc
