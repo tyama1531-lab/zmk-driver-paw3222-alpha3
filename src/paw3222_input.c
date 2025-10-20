@@ -491,7 +491,7 @@ void paw32xx_idle_exit(const struct device *dev) {
   const struct paw32xx_config *cfg = dev->config;
   int rc;
 
-  if (!paw32xx_idle) {
+  if (!data->idle) {
     return;
   }
 
