@@ -1,0 +1,52 @@
+*** Begin Patch
+*** Update File: zmk-driver-paw3222-alpha3/Kconfig
+@@
+ config PAW3222_REDUCED_SCAN_MS
+   int "Reduced scan polling interval (milliseconds)"
+   default 100
+   range 1 10000
+   help
+     Polling interval used when PAW3222_REDUCED_SCAN is enabled (in ms).
+     Increase this value to reduce CPU usage further at the cost of input
+     responsiveness. Default is 100 ms.
+ 
++config PAW3222_POWER_CTRL
++  bool "Enable PAW3222 power control"
++  default n
++  help
++    When enabled, the driver will attempt to put the PAW3222 sensor into a
++    low-power state when idle and wake it on activity. Platform support is
++    required (implementations should provide paw3222_set_sleep()). This is a
++    Level2 feature and should be enabled only when the hardware/board has
++    the necessary power control mechanism.
++
+*** End Patch
+
+*** Begin Patch
+*** Update File: zmk-driver-paw3222-alpha3/include/paw3222_input.h
+@@
+ #ifndef CONFIG_PAW3222_REDUCED_SCAN_MS
+ #define CONFIG_PAW3222_REDUCED_SCAN_MS 100
+ #endif
++/* Power control fallback (used if Kconfig not present) */
++#ifndef CONFIG_PAW3222_POWER_CTRL
++#define CONFIG_PAW3222_POWER_CTRL 0
++#endif
+ void paw32xx_idle_timeout_handler(struct k_timer *timer);
+ void paw32xx_idle_enter(const struct device *dev);
+ void paw32xx_idle_exit(const struct device *dev);
+*** End Patch
+
+*** Begin Patch
+*** Update File: zmk-driver-paw3222-alpha3/src/paw3222_input.c
+@@
+-#include "paw3222_spi.h"
+-
+-LOG_MODULE_REGISTER(paw32xx);
++#include "paw3222_spi.h"
++
++/* The primary module registration lives in paw3222.c; other compilation units
++ * must declare the module to avoid multiple definition of the log_const_* symbol.
++ */
++LOG_MODULE_DECLARE(paw32xx);
+*** End Patch

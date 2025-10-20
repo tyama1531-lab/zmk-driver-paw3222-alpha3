@@ -130,6 +130,10 @@ void paw32xx_motion_handler(const struct device *gpio_dev,
 #ifndef CONFIG_PAW3222_REDUCED_SCAN_MS
 #define CONFIG_PAW3222_REDUCED_SCAN_MS 100
 #endif
+/* Power control fallback (used if Kconfig not present) */
+#ifndef CONFIG_PAW3222_POWER_CTRL
+#define CONFIG_PAW3222_POWER_CTRL 0
+#endif
 void paw32xx_idle_timeout_handler(struct k_timer *timer);
 void paw32xx_idle_enter(const struct device *dev);
 void paw32xx_idle_exit(const struct device *dev);

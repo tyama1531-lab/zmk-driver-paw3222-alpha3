@@ -76,6 +76,12 @@ static int paw32xx_init(const struct device *dev)
 
   k_work_init(&data->motion_work, paw32xx_motion_work_handler);
   k_timer_init(&data->motion_timer, paw32xx_motion_timer_handler, NULL);
+  /* Initialize per-device idle timer (handler declared in paw3222_input.h)
+   * We don't start it here; it will be started on first motion event or
+   * when exiting idle. This guarantees the timer structure is ready.
+   */
+  k_timer_init(&data->idle_timer, paw32xx_idle_timeout_handler, NULL);
+  data->idle_timer_inited = true;
 
 #if DT_INST_NODE_HAS_PROP(0, power_gpios)
   if (gpio_is_ready_dt(&cfg->power_gpio))

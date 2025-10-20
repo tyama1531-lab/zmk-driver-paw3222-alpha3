@@ -114,6 +114,7 @@ struct paw32xx_data {
   /* Idle state support */
   struct k_timer idle_timer;                  /**< Idle timer for inactivity-based idle */
   bool idle;                                  /**< True when driver is in idle state */
+  bool idle_timer_inited;                     /**< True when idle_timer has been initialized */
 };
 
 #endif /* ZEPHYR_INCLUDE_INPUT_PAW32XX_H_ */

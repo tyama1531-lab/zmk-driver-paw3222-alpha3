@@ -103,3 +103,13 @@ config PAW3222_REDUCED_SCAN_MS
     Polling interval used when PAW3222_REDUCED_SCAN is enabled (in ms).
     Increase this value to reduce CPU usage further at the cost of input
     responsiveness. Default is 100 ms.
+
+config PAW3222_POWER_CTRL
+  bool "Enable PAW3222 power control"
+  default n
+  help
+    When enabled, the driver will attempt to put the PAW3222 sensor into a
+    low-power state when idle and wake it on activity. Platform support is
+    required (implementations should provide paw3222_set_sleep()). This is a
+    Level2 feature and should be enabled only when the hardware/board has
+    the necessary power control mechanism.
