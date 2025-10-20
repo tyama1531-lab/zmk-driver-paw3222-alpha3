@@ -61,10 +61,6 @@ extern struct k_timer bothscroll_key_timer;
  *
  * Computes the absolute value of a 16-bit signed integer without using
  * the standard library abs() function. This inline function is optimized
-/* Idle (no-motion) handling
- * - If no motion activity for CONFIG_PAW3222_IDLE_TIMEOUT_SECONDS, enter idle:
- *   disable IRQ, cancel motion work/timer.  Lightweight idle (sensor not fully powered down).
- */
  *
  * @param value Input signed 16-bit integer
  * 
