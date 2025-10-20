@@ -399,13 +399,9 @@ void paw32xx_motion_work_handler(struct k_work *work) {
     break;
   }
 
-  /* Restart motion timer. When reduced-scan is enabled, use the larger
-   * configured polling interval to save power/CPU. Default remains 15 ms. */
-#if defined(CONFIG_PAW3222_REDUCED_SCAN) && CONFIG_PAW3222_REDUCED_SCAN
-  k_timer_start(&data->motion_timer, K_MSEC(CONFIG_PAW3222_REDUCED_SCAN_MS), K_NO_WAIT);
-#else
+  /* Restart motion timer with normal 15ms scan frequency for active operation.
+   * Reduced scan frequency is only used during idle state. */
   k_timer_start(&data->motion_timer, K_MSEC(15), K_NO_WAIT);
-#endif
   return;
 
 cleanup:
@@ -428,6 +424,8 @@ void paw32xx_motion_handler(const struct device *gpio_dev,
   if (data->idle) {
     LOG_INF("PAW32XX: IRQ while idle -> waking up");
     paw32xx_idle_exit(dev);
+    /* After waking up, still process the motion that triggered the IRQ */
+    k_work_submit(&data->motion_work);
     return;
   }
   k_work_submit(&data->motion_work);
