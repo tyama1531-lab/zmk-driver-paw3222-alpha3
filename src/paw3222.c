@@ -174,6 +174,10 @@ static int paw32xx_init(const struct device *dev)
               (static int32_t scroll_horizontal_snipe_layers##n[] =                         \
                    DT_INST_PROP(n, scroll_horizontal_snipe_layers);),                       \
               (/* Do nothing */))                                                           \
+  COND_CODE_1(DT_INST_NODE_HAS_PROP(n, bothscroll_layers),                                  \
+              (static int32_t bothscroll_layers##n[] =                                      \
+                   DT_INST_PROP(n, bothscroll_layers);),                                    \
+              (/* Do nothing */))                                                           \
   static const struct paw32xx_config paw32xx_cfg_##n = {                                    \
       .spi = SPI_DT_SPEC_INST_GET(n, PAW32XX_SPI_MODE, 0),                                  \
       .irq_gpio = GPIO_DT_SPEC_INST_GET(n, irq_gpios),                                      \
@@ -183,6 +187,11 @@ static int paw32xx_init(const struct device *dev)
       .scroll_layers_len =                                                                  \
           COND_CODE_1(DT_INST_NODE_HAS_PROP(n, scroll_layers),                              \
                       (DT_INST_PROP_LEN(n, scroll_layers)), (0)),                           \
+      .bothscroll_layers = COND_CODE_1(DT_INST_NODE_HAS_PROP(n, bothscroll_layers),         \
+                                   (bothscroll_layers##n), (NULL)),                         \
+      .bothscroll_layers_len =                                                              \
+          COND_CODE_1(DT_INST_NODE_HAS_PROP(n, bothscroll_layers),                          \
+                      (DT_INST_PROP_LEN(n, bothscroll_layers)), (0)),                       \
       .snipe_layers = COND_CODE_1(DT_INST_NODE_HAS_PROP(n, snipe_layers),                   \
                                   (snipe_layers##n), (NULL)),                               \
       .snipe_layers_len =                                                                   \

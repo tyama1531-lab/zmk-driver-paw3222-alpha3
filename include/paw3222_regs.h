@@ -154,6 +154,7 @@ enum paw32xx_input_mode {
   PAW32XX_SNIPE,                   /**< High-precision cursor movement mode with reduced sensitivity */
   PAW32XX_SCROLL_SNIPE,            /**< High-precision vertical scroll mode with reduced sensitivity */
   PAW32XX_SCROLL_HORIZONTAL_SNIPE, /**< High-precision horizontal scroll mode with reduced sensitivity */
+  PAW32XX_BOTHSCROLL,              /**< Simultaneous XY scroll mode (vertical + horizontal) */
 };
 
 #endif /* ZEPHYR_INCLUDE_PAW3222_REGS_H_ */

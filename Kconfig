@@ -1,3 +1,10 @@
+config PAW3222_IDLE_TIMEOUT_SECONDS
+    int "PAW3222 idle timeout (seconds)"
+    default 300
+    range 1 86400
+    help
+      Idle timeout in seconds before the PAW3222 driver enters idle mode.
+      Use smaller values for testing (e.g. 5) and larger values for normal operation (e.g. 300).
 menuconfig PAW3222
   bool "PAW3222 mouse optical sensor"
   select SPI
@@ -78,3 +85,21 @@ config PAW3222_BEHAVIOR
     This allows using &paw_mode behavior in keymaps.
 
 endif # PAW3222
+
+config PAW3222_REDUCED_SCAN
+  bool "Enable reduced scan polling"
+  default n
+  help
+    When enabled, the driver will use a longer polling interval between
+    motion processing cycles to reduce CPU wakeups and power usage when
+    activity is low. This is a Level1, application-side reduced-scan mode
+    intended for incremental testing; it does not attempt sensor deep-sleep.
+
+config PAW3222_REDUCED_SCAN_MS
+  int "Reduced scan polling interval (milliseconds)"
+  default 100
+  range 1 10000
+  help
+    Polling interval used when PAW3222_REDUCED_SCAN is enabled (in ms).
+    Increase this value to reduce CPU usage further at the cost of input
+    responsiveness. Default is 100 ms.

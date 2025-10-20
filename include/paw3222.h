@@ -43,6 +43,7 @@ enum paw32xx_current_mode {
   PAW32XX_MODE_SNIPE,                   /**< High-precision cursor movement mode */
   PAW32XX_MODE_SCROLL_SNIPE,            /**< High-precision vertical scrolling mode */
   PAW32XX_MODE_SCROLL_HORIZONTAL_SNIPE, /**< High-precision horizontal scrolling mode */
+  PAW32XX_MODE_BOTHSCROLL,              /**< XY同時スクロールモード */
 };
 
 /**
@@ -70,6 +71,8 @@ struct paw32xx_config {
   int32_t *scroll_snipe_layers;                /**< Array of layer IDs for high-precision vertical scroll */
   size_t scroll_horizontal_snipe_layers_len;   /**< Number of horizontal scroll snipe layers defined */
   int32_t *scroll_horizontal_snipe_layers;     /**< Array of layer IDs for high-precision horizontal scroll */
+  size_t bothscroll_layers_len;                /**< Number of XY simultaneous scroll layers defined */
+  int32_t *bothscroll_layers;                   /**< Array of layer IDs for XY simultaneous scroll mode */
   
   /* Sensor configuration */
   int16_t res_cpi;                             /**< Default CPI resolution (608-4826) */
@@ -102,10 +105,15 @@ struct paw32xx_data {
   struct k_timer motion_timer;                /**< Timer for motion processing timeout */
   int16_t current_cpi;                        /**< Currently configured CPI value */
   int16_t scroll_accumulator;                 /**< Accumulator for smooth scrolling (reduced from int32_t) */
+  int16_t scroll_accumulator_x;               /**< X軸スクロール用 */
+  int16_t scroll_accumulator_y;               /**< Y軸スクロール用 */
 
   /* Mode switching state */
   enum paw32xx_current_mode current_mode;     /**< Current operational mode of the sensor */
   bool mode_toggle_state;                     /**< Toggle state for behavior-based mode switching */
+  /* Idle state support */
+  struct k_timer idle_timer;                  /**< Idle timer for inactivity-based idle */
+  bool idle;                                  /**< True when driver is in idle state */
 };
 
 #endif /* ZEPHYR_INCLUDE_INPUT_PAW32XX_H_ */
