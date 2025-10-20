@@ -438,10 +438,7 @@ void paw32xx_idle_timeout_handler(struct k_timer *timer) {
 
   LOG_INF("PAW32XX: idle timeout reached, entering idle");
 
-  /* disable irq */
-  gpio_pin_interrupt_configure_dt(&cfg->irq_gpio, GPIO_INT_DISABLE);
-
-  /* cancel motion processing */
+  /* cancel motion processing but keep IRQ enabled for wake-up */
   k_work_cancel(&data->motion_work);
   k_timer_stop(&data->motion_timer);
 
