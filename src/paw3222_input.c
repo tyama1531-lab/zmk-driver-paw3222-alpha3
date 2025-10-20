@@ -33,7 +33,10 @@
 #include "paw3222_regs.h"
 #include "paw3222_spi.h"
 
-LOG_MODULE_REGISTER(paw32xx);
+/* The primary module registration lives in paw3222.c; other compilation units
+ * must declare the module to avoid multiple definition of the log_const_* symbol.
+ */
+LOG_MODULE_DECLARE(paw32xx);
 
 #include <zephyr/input/input.h>
 #include <zephyr/kernel.h>
